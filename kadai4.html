@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <script type = "text/javascript">
+        var seikai = 0;//正解数
+        var point = 0;//総合得点
+        var challenge = 20;//残りゲーム回数
+        var clickcheck;//１ゲーム内での２回以上のクリックを防止
+        var sw1,sw2,sw3,sw4,sw5;//選択肢１～５の値を格納
+        var max = new Array(5);//乱数の最大値がmax[4]に格納される
+        function startgame(){
+            var swap;
+            if(challenge > 0){ //残りゲーム回数をチェック
+                challenge--;
+                clickcheck = 0;//clickcheckをリセット
+                document.stbutton.elements[0].value = challenge;//残りゲーム回数をもともとスタートボタンだったところに表示
+                sw1 = Math.floor(Math.random()*101);//乱数をセット　乱数にするとたまに同じ値になってしまう
+                sw2 = Math.floor(Math.random()*101);
+                sw3 = Math.floor(Math.random()*101);
+                sw4 = Math.floor(Math.random()*101);
+                sw5 = Math.floor(Math.random()*101);
+                document.switch.elements[0].value = sw1;//選択肢のボタンに乱数を表示
+                document.switch.elements[1].value = sw2;
+                document.switch.elements[2].value = sw3;
+                document.switch.elements[3].value = sw4;
+                document.switch.elements[4].value = sw5;
+                max[0] = sw1;//一度すべての値をmaxにセットしてから並び替え
+                max[1] = sw2;
+                max[2] = sw3;
+                max[3] = sw4;
+                max[4] = sw5;
+                for(i=0;i<4;i++){//最大値だけわかればいいのでバブルソートの１回バージョン
+                    if(max[i]>max[i+1]){
+                        swap = max[i];
+                        max[i] = max[i+1];
+                        max[i+1] = swap;
+                    }
+                }
+                setTimeout(startgame,1000);//setIntervalにすると20秒ではなく一瞬で終わってしまうのでsetTimeoutにした。startgameが同時に起動している？
+            }else{
+                return 0;
+            }
+        }
+        function seigohantei(n){ //選択肢をクリックするとそれが最大値か判定する関数
+            //alert(max[4]);
+            if(clickcheck == 0){ //clickcheckが０の時しか起動しない
+                if(n == max[4]){
+                    point = point + n; //正解なのでポイント加算
+                    seikai++;//正解数も１増やす
+                    //alert(point);
+                }else{
+                    point = point - n;//不正解なのでポイント減
+                }
+                document.getElementById("seikaisu").innerHTML = seikai;//表示
+                document.getElementById("totalpoint").innerHTML = point;
+            }
+            clickcheck++; //１ゲームに２回以上のクリックを防止するため値を増やす。startgameが起動するとリセットされる
+            //alert(clickcheck);
+            return 0;
+        }
+        </script>
+    </head>
+    <body>
+        <form name = stbutton>
+            <input type = "button" value = "START" onclick = "startgame()"><br>
+        </form>
+        
+        <form name = switch>
+            <input type = "button" value = "SW1" onclick = "seigohantei(sw1)">
+            <input type = "button" value = "SW2" onclick = "seigohantei(sw2)">
+            <input type = "button" value = "SW3" onclick = "seigohantei(sw3)">
+            <input type = "button" value = "SW4" onclick = "seigohantei(sw4)">
+            <input type = "button" value = "SW5" onclick = "seigohantei(sw5)">
+        </form>
+        <br>
+        正解数：<div id = seikaisu></div><br>
+        合計点：<div id = totalpoint></div>
+        <!--<script>
+            document.write("正解数："+seikai);
+            document.write("</br>");
+            document.write("合計点："+point);
+        </script> -->
+    </body>
+</html>
