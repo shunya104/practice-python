@@ -5,37 +5,26 @@
         var point = 0;//総合得点
         var challenge = 20;//残りゲーム回数
         var clickcheck;//１ゲーム内での２回以上のクリックを防止
-        var sw1,sw2,sw3,sw4,sw5;//選択肢１～５の値を格納
-        var max = new Array(5);//乱数の最大値がmax[4]に格納される
+        var sw = new Array(5);
         function startgame(){
             var swap;
             if(challenge > 0){ //残りゲーム回数をチェック
                 challenge--;
                 clickcheck = 0;//clickcheckをリセット
                 document.stbutton.elements[0].value = challenge;//残りゲーム回数をもともとスタートボタンだったところに表示
-                sw1 = Math.floor(Math.random()*101);//乱数をセット　乱数にするとたまに同じ値になってしまう
-                sw2 = Math.floor(Math.random()*101);
-                sw3 = Math.floor(Math.random()*101);
-                sw4 = Math.floor(Math.random()*101);
-                sw5 = Math.floor(Math.random()*101);
-                document.switch.elements[0].value = sw1;//選択肢のボタンに乱数を表示
-                document.switch.elements[1].value = sw2;
-                document.switch.elements[2].value = sw3;
-                document.switch.elements[3].value = sw4;
-                document.switch.elements[4].value = sw5;
-                max[0] = sw1;//一度すべての値をmaxにセットしてから並び替え
-                max[1] = sw2;
-                max[2] = sw3;
-                max[3] = sw4;
-                max[4] = sw5;
-                for(i=0;i<4;i++){//最大値だけわかればいいのでバブルソートの１回バージョン
-                    if(max[i]>max[i+1]){
-                        swap = max[i];
-                        max[i] = max[i+1];
-                        max[i+1] = swap;
+                numberset();
+                document.switch.elements[0].value = sw[0];//選択肢のボタンに乱数を表示
+                document.switch.elements[1].value = sw[1];
+                document.switch.elements[2].value = sw[2];
+                document.switch.elements[3].value = sw[3];
+                document.switch.elements[4].value = sw[4];
+                for(i=0;i<4;i++){//最大値だけわかればいいのでバブルソートの１回バージョン.最大値はsw[4]にはいる。
+                    if(sw[i]>sw[i+1]){
+                        swap = sw[i];
+                        sw[i] = sw[i+1];
+                        sw[i+1] = swap;
                     }
                 }
-                setTimeout(startgame,1000);//setIntervalにすると20秒ではなく一瞬で終わってしまうのでsetTimeoutにした。startgameが同時に起動している？
             }else{
                 return 0;
             }
@@ -43,12 +32,12 @@
         function seigohantei(n){ //選択肢をクリックするとそれが最大値か判定する関数
             //alert(max[4]);
             if(clickcheck == 0){ //clickcheckが０の時しか起動しない
-                if(n == max[4]){
-                    point = point + n; //正解なのでポイント加算
+                if(document.switch.elements[n].value == sw[4]){
+                    point = point + parseInt(document.switch.elements[n].value); //正解なのでポイント加算
                     seikai++;//正解数も１増やす
                     //alert(point);
                 }else{
-                    point = point - n;//不正解なのでポイント減
+                    point = point - parseInt(document.switch.elements[n].value);//不正解なのでポイント減
                 }
                 document.getElementById("seikaisu").innerHTML = seikai;//表示
                 document.getElementById("totalpoint").innerHTML = point;
@@ -57,19 +46,33 @@
             //alert(clickcheck);
             return 0;
         }
+        function numberset(){
+            sw[0] = Math.floor(Math.random()*100) +1;//乱数をセット　乱数にするとたまに同じ値になってしまう
+            sw[1] = Math.floor(Math.random()*100) +1;
+            sw[2] = Math.floor(Math.random()*100) +1;
+            sw[3] = Math.floor(Math.random()*100) +1;
+            sw[4] = Math.floor(Math.random()*100) +1;
+            while(sw[0] == sw[1] || sw[0] == sw[2] || sw[0] == sw[3] || sw[0] == sw[4] || sw[1] == sw[2] || sw[1] == sw[3] || sw[1] == sw[4] || sw[2] == sw[3] || sw[2] == sw[4] || sw[3] == sw[4]){
+                sw[0] = Math.floor(Math.random()*100) +1;//同じ値になることを防止
+                sw[1] = Math.floor(Math.random()*100) +1;
+                sw[2] = Math.floor(Math.random()*100) +1;
+                sw[3] = Math.floor(Math.random()*100) +1;
+                sw[4] = Math.floor(Math.random()*100) +1;
+            }
+        }
         </script>
     </head>
     <body>
         <form name = stbutton>
-            <input type = "button" value = "START" onclick = "startgame()"><br>
+            <input type = "button" value = "START" onclick = "setInterval(startgame,1000)"><br>
         </form>
         
         <form name = switch>
-            <input type = "button" value = "SW1" onclick = "seigohantei(sw1)">
-            <input type = "button" value = "SW2" onclick = "seigohantei(sw2)">
-            <input type = "button" value = "SW3" onclick = "seigohantei(sw3)">
-            <input type = "button" value = "SW4" onclick = "seigohantei(sw4)">
-            <input type = "button" value = "SW5" onclick = "seigohantei(sw5)">
+            <input type = "button" value = "SW1" onclick = "seigohantei(0)">
+            <input type = "button" value = "SW2" onclick = "seigohantei(1)">
+            <input type = "button" value = "SW3" onclick = "seigohantei(2)">
+            <input type = "button" value = "SW4" onclick = "seigohantei(3)">
+            <input type = "button" value = "SW5" onclick = "seigohantei(4)">
         </form>
         <br>
         正解数：<div id = seikaisu></div><br>
